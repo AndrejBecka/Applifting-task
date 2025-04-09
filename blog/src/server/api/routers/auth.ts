@@ -1,16 +1,10 @@
 import { z } from "zod";
+import { LoginResponseSchema } from "~/schemas/auth.schema";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import type { LoginResponse } from "~/types/auth";
 
 const API_URL = process.env.AppLift_URL;
 const API_KEY = process.env.API_KEY;
-
-const LoginResponseSchema = z.object({
-  access_token: z.string(),
-  expires_in: z.number(),
-  token_type: z.string(),
-});
-
-type LoginResponse = z.infer<typeof LoginResponseSchema>;
 
 export const authRouter = createTRPCRouter({
   login: publicProcedure
