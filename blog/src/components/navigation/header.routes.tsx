@@ -27,4 +27,8 @@ export const PRIVATE_HEADER_ROUTES: NavItem[] = [
     title: "Create Article",
     href: PRIVATE_ROUTES.CREATE_ARTICLE,
   },
+  {
+    title: "Edit Article",
+    href: PRIVATE_ROUTES.EDIT_ARTICLE,
+  },
 ];

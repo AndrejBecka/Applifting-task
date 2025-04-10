@@ -1,43 +1,58 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
-import { ArticleCreateSchema, ArticleSchema } from "~/schemas/article.schema";
+import {
+  ArticleCreateSchema,
+  ArticleDetailSchema,
+  PaginatedArticlesSchema,
+} from "~/schemas/article.schema";
 
-const API_URL = process.env.AppLift_URL;
-const API_KEY = process.env.API_KEY;
+const API_URL = process.env.AppLift_URL!;
+const API_KEY = process.env.API_KEY!;
+
+function extractErrorMessage(error: unknown, fallback: string) {
+  if (typeof error === "object" && error !== null && "message" in error) {
+    return String((error as { message: string }).message);
+  }
+  return fallback;
+}
 
 export const articleRouter = createTRPCRouter({
   getArticle: publicProcedure
-    .input(z.object({ ...ArticleSchema.shape, token: z.string() }))
+    .input(
+      z.object({
+        token: z.string(),
+        offset: z.number().optional().default(0),
+        limit: z.number().optional().default(10),
+      }),
+    )
     .query(async ({ input }) => {
-      const res = await fetch(`${API_URL}/articles`, {
+      const queryParams = new URLSearchParams({
+        offset: input.offset.toString(),
+        limit: input.limit.toString(),
+      });
+
+      const res = await fetch(`${API_URL}/articles?${queryParams}`, {
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY ?? "",
+          "x-api-key": API_KEY,
           Authorization: `Bearer ${input.token}`,
         },
       });
 
       if (!res.ok) {
-        const error = await res.json().catch(() => ({
-          message: "Invalid JSON error response",
-        }));
-        const errorMessage =
-          typeof error === "object" && error !== null && "message" in error
-            ? String(error.message)
-            : "Login failed";
-        throw new Error(errorMessage);
+        const error = (await res.json().catch(() => ({}))) as unknown;
+        throw new Error(extractErrorMessage(error, "Failed to fetch articles"));
       }
 
-      const data = await res.json();
-      const validatedData = ArticleSchema.parse(data);
-      return validatedData;
+      const data = (await res.json()) as unknown;
+      return PaginatedArticlesSchema.parse(data);
     }),
 
   createArticle: publicProcedure
     .input(
       z.object({
         ...ArticleCreateSchema.shape,
-        token: z.string(), // used only for Authorization
+        token: z.string(),
       }),
     )
     .mutation(async ({ input }) => {
@@ -47,26 +62,101 @@ export const articleRouter = createTRPCRouter({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": API_KEY ?? "",
+          "x-api-key": API_KEY,
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(articlePayload),
       });
 
       if (!res.ok) {
-        const error = await res.json().catch(() => ({
-          message: "Invalid JSON error response",
-        }));
-        const errorMessage =
-          typeof error === "object" && error !== null && "message" in error
-            ? String(error.message)
-            : JSON.stringify(error);
-
-        throw new Error(errorMessage);
+        const error = (await res.json().catch(() => ({}))) as unknown;
+        throw new Error(extractErrorMessage(error, "Failed to create article"));
       }
 
-      const data = await res.json();
+      const data = (await res.json()) as unknown;
+      return ArticleDetailSchema.parse(data);
+    }),
 
-      return ArticleCreateSchema.parse(data);
+  getArticleDetail: publicProcedure
+    .input(
+      z.object({
+        articleId: z.string().uuid(),
+        token: z.string(),
+      }),
+    )
+    .query(async ({ input }) => {
+      const res = await fetch(`${API_URL}/articles/${input.articleId}`, {
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": API_KEY,
+          Authorization: `Bearer ${input.token}`,
+        },
+      });
+
+      if (!res.ok) {
+        const error = (await res.json().catch(() => ({}))) as unknown;
+        throw new Error(
+          extractErrorMessage(error, "Failed to fetch article detail"),
+        );
+      }
+
+      const data = (await res.json()) as unknown;
+      return ArticleDetailSchema.parse(data);
+    }),
+
+  updateArticle: publicProcedure
+    .input(
+      z
+        .object({
+          articleId: z.string().uuid(),
+          token: z.string(),
+        })
+        .merge(ArticleDetailSchema),
+    )
+    .mutation(async ({ input }) => {
+      const { token, articleId, ...articlePayload } = input;
+
+      const res = await fetch(`${API_URL}/articles/${articleId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": API_KEY,
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(articlePayload),
+      });
+
+      if (!res.ok) {
+        const error = (await res.json().catch(() => ({}))) as unknown;
+        throw new Error(extractErrorMessage(error, "Failed to update article"));
+      }
+
+      const data = (await res.json()) as unknown;
+      return ArticleDetailSchema.parse(data);
+    }),
+
+  deleteArticle: publicProcedure
+    .input(
+      z.object({
+        articleId: z.string().uuid(),
+        token: z.string(),
+      }),
+    )
+    .mutation(async ({ input }) => {
+      const res = await fetch(`${API_URL}/articles/${input.articleId}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": API_KEY,
+          Authorization: `Bearer ${input.token}`,
+        },
+      });
+
+      if (!res.ok) {
+        const error = (await res.json().catch(() => ({}))) as unknown;
+        throw new Error(extractErrorMessage(error, "Failed to delete article"));
+      }
+
+      return { success: true };
     }),
 });

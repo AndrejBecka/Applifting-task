@@ -9,9 +9,16 @@ export const ArticleSchema = z.object({
   lastUpdatedAt: z.string(),
 });
 
+export const CommentSchema = z.object({
+  commentId: z.string(),
+  content: z.string(),
+  author: z.string(), // or email, or object — as needed
+  createdAt: z.string(),
+});
+
 export const ArticleDetailSchema = ArticleSchema.extend({
   content: z.string(),
-  //   comments: z.array(CommentSchema),
+  comments: z.array(CommentSchema),
 });
 
 export const ArticleCreateSchema = z.object({
@@ -24,4 +31,9 @@ export const ArticleCreateSchema = z.object({
 export const ImageInfoSchema = z.object({
   imageId: z.string(),
   imageUrl: z.string(),
+});
+
+export const PaginatedArticlesSchema = z.object({
+  items: z.array(ArticleSchema),
+  count: z.number().optional(),
 });
