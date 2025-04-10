@@ -3,6 +3,9 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import {
   ArticleCreateSchema,
   ArticleDetailSchema,
+  ArticleImageSchema,
+  ArticleUpdateSchema,
+  ImageInfoSchema,
   PaginatedArticlesSchema,
 } from "~/schemas/article.schema";
 
@@ -106,12 +109,11 @@ export const articleRouter = createTRPCRouter({
 
   updateArticle: publicProcedure
     .input(
-      z
-        .object({
-          articleId: z.string().uuid(),
-          token: z.string(),
-        })
-        .merge(ArticleDetailSchema),
+      z.object({
+        articleId: z.string().uuid(),
+        token: z.string(),
+        ...ArticleUpdateSchema.shape,
+      }),
     )
     .mutation(async ({ input }) => {
       const { token, articleId, ...articlePayload } = input;

@@ -30,10 +30,22 @@ export const ArticleCreateSchema = z.object({
 
 export const ImageInfoSchema = z.object({
   imageId: z.string(),
-  imageUrl: z.string(),
+  name: z.string(),
 });
 
 export const PaginatedArticlesSchema = z.object({
   items: z.array(ArticleSchema),
   count: z.number().optional(),
+});
+
+export const ArticleUpdateSchema = z.object({
+  title: z.string(),
+  perex: z.string(),
+  content: z.string(),
+  imageId: z.string().uuid().nullable().optional(),
+});
+
+export const ArticleImageSchema = z.object({
+  imageId: z.string(),
+  name: z.string(),
 });

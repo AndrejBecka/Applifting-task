@@ -1,5 +1,6 @@
 import type {
   ArticleCreateSchema,
+  ArticleImageSchema,
   ArticleSchema,
   ImageInfoSchema,
   PaginatedArticlesSchema,
@@ -15,6 +16,8 @@ export type ArticleCreate = z.infer<typeof ArticleCreateSchema>;
 export type ImageInfo = z.infer<typeof ImageInfoSchema>;
 
 export type PaginatedArticles = z.infer<typeof PaginatedArticlesSchema>;
+
+export type ArticleImage = z.infer<typeof ArticleImageSchema>;
 
 type RouterOutput = inferRouterOutputs<AppRouter>;
 
