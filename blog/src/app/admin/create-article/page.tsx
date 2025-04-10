@@ -8,6 +8,7 @@ import { Textarea } from "~/components/ui/textarea";
 import { api } from "~/trpc/react";
 import { useImageUpload } from "~/hooks/uploadImage-hook";
 import { useRouter } from "next/navigation";
+import { PRIVATE_ROUTES } from "~/routes/routes";
 
 export default function CreateArticle() {
   const [title, setTitle] = useState("");
@@ -23,6 +24,7 @@ export default function CreateArticle() {
       setTitle("");
       setContent("");
       setImageFile(null);
+      router.push(PRIVATE_ROUTES.MY_ARTICLES);
     },
     onError: (error) => {
       toast.error("Failed to create article: " + error.message);
@@ -77,8 +79,10 @@ export default function CreateArticle() {
   }, [router]);
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Create new article</h1>
+    <div className="mx-auto max-w-4xl space-y-6">
+      <h1 className="mt-4 flex items-center justify-center text-2xl font-bold">
+        Create new article
+      </h1>
       <div className="rounded-md border bg-white p-6">
         <form id="article-form" onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
@@ -117,15 +121,15 @@ export default function CreateArticle() {
             />
           </div>
         </form>
+        <div className="mt-4 flex items-center justify-center">
+          <Button type="submit" form="article-form" disabled={isUploading}>
+            {isUploading ? "Uploading..." : "Publish article"}
+          </Button>
+        </div>
+        {uploadError && (
+          <p className="mt-2 text-sm text-red-500">{uploadError}</p>
+        )}
       </div>
-      <div className="flex items-center justify-between">
-        <Button type="submit" form="article-form" disabled={isUploading}>
-          {isUploading ? "Uploading..." : "Publish article"}
-        </Button>
-      </div>
-      {uploadError && (
-        <p className="mt-2 text-sm text-red-500">{uploadError}</p>
-      )}
     </div>
   );
 }
