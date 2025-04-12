@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
@@ -11,10 +12,19 @@ export default function EditArticle() {
   const router = useRouter();
   const params = useParams();
 
+  const [isHydrated, setIsHydrated] = useState(false);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+
   const token =
     typeof window !== "undefined" ? (localStorage.getItem("token") ?? "") : "";
 
   const articleId = typeof params.id === "string" ? params.id : null;
+
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
+
+  const utils = api.useUtils();
 
   const { data: article, isLoading } = api.article.getArticleDetail.useQuery(
     {
@@ -23,14 +33,25 @@ export default function EditArticle() {
     },
     {
       enabled: !!articleId && !!token,
+      refetchOnMount: true,
+      staleTime: 0,
     },
   );
 
-  // Custom hook for image blob URL based on article.imageId
-  const imageUrl = useSecureImage(article?.imageId ?? null, token);
+  const fetchedImage = useSecureImage(
+    isHydrated ? (article?.imageId ?? null) : null,
+    token,
+  );
+
+  useEffect(() => {
+    if (fetchedImage) setImageUrl(fetchedImage);
+  }, [fetchedImage]);
 
   const updateArticle = api.article.updateArticle.useMutation({
-    onSuccess: () => {
+    onSuccess: async () => {
+      await utils.article.getArticleDetail.invalidate({
+        articleId: articleId ?? "",
+      }); // 💥 invalidate cache
       toast.success("Article updated successfully");
       router.push(PRIVATE_ROUTES.MY_ARTICLES);
     },

@@ -90,16 +90,6 @@ export function ArticleForm({
           <label htmlFor="title" className="text-sm font-medium">
             Article Title
           </label>
-          {imageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={imageUrl}
-              alt="Uploaded"
-              width={160}
-              height={160}
-              className="mb-2 max-h-40 rounded border shadow"
-            />
-          )}
           <Input
             id="title"
             value={title}
@@ -112,11 +102,11 @@ export function ArticleForm({
         <div className="space-y-2">
           <label className="text-sm font-medium">Featured Image</label>
 
-          {previewUrl && (
+          {(imageFile ? previewUrl : imageUrl) && (
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={previewUrl}
+                src={imageFile ? (previewUrl ?? "") : (imageUrl ?? "")}
                 alt="Uploaded"
                 width={160}
                 height={160}
