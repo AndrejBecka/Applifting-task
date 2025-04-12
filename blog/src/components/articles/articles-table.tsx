@@ -1,15 +1,38 @@
+"use client";
+
 import { PencilIcon } from "lucide-react";
 import type { Article } from "~/types/article";
 import { TrashIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { PRIVATE_ROUTES } from "~/routes/routes";
 import Link from "next/link";
-
+import { useRouter } from "next/navigation";
+import { api } from "~/trpc/react";
+import { toast } from "sonner";
 interface ArticlesTableProps {
   articles: Array<Article & { commentCount: number }>;
 }
 
 export function ArticlesTable({ articles }: ArticlesTableProps) {
+  const router = useRouter();
+  const token = localStorage.getItem("token");
+
+  const deleteArticle = api.article.deleteArticle.useMutation({
+    onSuccess: () => {
+      toast.success("Article deleted successfully");
+      router.refresh();
+    },
+    onError: (error) => {
+      toast.error("Failed to delete article: " + error.message);
+    },
+  });
+
+  const handleDelete = (articleId: string) => {
+    if (window.confirm("Are you sure you want to delete this article?")) {
+      deleteArticle.mutate({ articleId, token: token ?? "" });
+    }
+  };
+
   return (
     <table className="w-full text-sm">
       <thead>
@@ -38,7 +61,12 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
                     <span className="sr-only">Edit</span>
                   </Link>
                 </Button>
-                <Button variant="ghost" size="icon">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleDelete(article.articleId)}
+                  disabled={deleteArticle.isPending}
+                >
                   <TrashIcon className="h-4 w-4" />
                   <span className="sr-only">Delete</span>
                 </Button>
