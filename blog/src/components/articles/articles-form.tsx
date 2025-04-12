@@ -43,7 +43,6 @@ export function ArticleForm({
     }
   };
 
-  // Cleanup blob when component unmounts or URL changes
   useEffect(() => {
     return () => {
       if (previewUrl?.startsWith("blob:")) {
@@ -71,7 +70,7 @@ export function ArticleForm({
       await onSubmit({
         title,
         content,
-        imageId: uploadedImageId,
+        imageId: uploadedImageId, // null if no new file selected
       });
     } catch (error) {
       console.error("Error processing request:", error);
@@ -86,6 +85,7 @@ export function ArticleForm({
   return (
     <div className="rounded-md border bg-white p-6">
       <form id="article-form" onSubmit={handleSubmit} className="space-y-6">
+        {/* TITLE */}
         <div className="space-y-2">
           <label htmlFor="title" className="text-sm font-medium">
             Article Title
@@ -99,22 +99,18 @@ export function ArticleForm({
           />
         </div>
 
+        {/* IMAGE */}
         <div className="space-y-2">
           <label className="text-sm font-medium">Featured Image</label>
-
           {(imageFile ? previewUrl : imageUrl) && (
-            <>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={imageFile ? (previewUrl ?? "") : (imageUrl ?? "")}
-                alt="Uploaded"
-                width={160}
-                height={160}
-                className="mb-2 max-h-40 rounded border shadow"
-              />
-            </>
+            <img
+              src={imageFile ? (previewUrl ?? "") : (imageUrl ?? "")}
+              alt="Uploaded"
+              width={160}
+              height={160}
+              className="mb-2 max-h-40 rounded border shadow"
+            />
           )}
-
           <Input
             id="picture"
             type="file"
@@ -123,6 +119,7 @@ export function ArticleForm({
           />
         </div>
 
+        {/* CONTENT */}
         <div className="space-y-2">
           <label htmlFor="content" className="text-sm font-medium">
             Content

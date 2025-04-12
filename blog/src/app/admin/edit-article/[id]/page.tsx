@@ -51,7 +51,7 @@ export default function EditArticle() {
     onSuccess: async () => {
       await utils.article.getArticleDetail.invalidate({
         articleId: articleId ?? "",
-      }); // 💥 invalidate cache
+      });
       toast.success("Article updated successfully");
       router.push(PRIVATE_ROUTES.MY_ARTICLES);
     },
@@ -72,7 +72,7 @@ export default function EditArticle() {
       title: data.title,
       content: data.content,
       perex: data.content.substring(0, 100) + "...",
-      imageId: data.imageId ?? "",
+      imageId: data.imageId ?? null,
       token,
     });
   };
