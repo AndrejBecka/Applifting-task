@@ -4,7 +4,10 @@ import Link from "next/link";
 import { Button } from "~/components/ui/button";
 import { ArrowRight, LogOut } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
-import { PUBLIC_HEADER_ROUTES, PRIVATE_HEADER_ROUTES } from "./header.routes";
+import {
+  PUBLIC_HEADER_ROUTES,
+  NAVIGATION_PRIVATE_ROUTES,
+} from "./header.routes";
 import { cn } from "~/lib/utils";
 import { useState, useEffect } from "react";
 
@@ -44,7 +47,7 @@ export default function Header() {
   };
 
   const headerNavigation = isLoggedIn
-    ? [...PUBLIC_HEADER_ROUTES, ...PRIVATE_HEADER_ROUTES]
+    ? [...PUBLIC_HEADER_ROUTES, ...NAVIGATION_PRIVATE_ROUTES]
     : PUBLIC_HEADER_ROUTES;
 
   return (

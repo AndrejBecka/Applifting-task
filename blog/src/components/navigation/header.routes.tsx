@@ -18,7 +18,7 @@ export const PUBLIC_HEADER_ROUTES: NavItem[] = [
   },
 ];
 
-export const PRIVATE_HEADER_ROUTES: NavItem[] = [
+export const NAVIGATION_PRIVATE_ROUTES: NavItem[] = [
   {
     title: "My Articles",
     href: PRIVATE_ROUTES.MY_ARTICLES,
@@ -26,5 +26,19 @@ export const PRIVATE_HEADER_ROUTES: NavItem[] = [
   {
     title: "Create Article",
     href: PRIVATE_ROUTES.CREATE_ARTICLE,
+  },
+];
+export const PRIVATE_HEADER_ROUTES = [
+  {
+    title: "My Articles",
+    href: PRIVATE_ROUTES.MY_ARTICLES,
+  },
+  {
+    title: "Create Article",
+    href: PRIVATE_ROUTES.CREATE_ARTICLE,
+  },
+  {
+    title: "Edit Article",
+    href: PRIVATE_ROUTES.EDIT_ARTICLE,
   },
 ];
