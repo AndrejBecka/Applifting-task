@@ -29,6 +29,7 @@ export default function CreateArticle() {
   const handleSubmit = async (data: {
     title: string;
     content: string;
+    perex: string;
     imageId: string | null;
   }) => {
     const token = localStorage.getItem("token");
@@ -37,7 +38,7 @@ export default function CreateArticle() {
     await createArticle.mutateAsync({
       title: data.title,
       content: data.content,
-      perex: data.content.substring(0, 100) + "...",
+      perex: data.perex,
       imageId: data.imageId ?? "",
       token,
     });

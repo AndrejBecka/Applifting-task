@@ -125,6 +125,8 @@ export const articleRouter = createTRPCRouter({
     .mutation(async ({ input }) => {
       const { token, articleId, ...articlePayload } = input;
 
+      console.log("🛠 Sent payload to PATCH /articles/:id:", articlePayload);
+
       const res = await fetch(`${API_URL}/articles/${articleId}`, {
         method: "PATCH",
         headers: {

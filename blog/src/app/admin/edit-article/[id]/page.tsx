@@ -63,6 +63,7 @@ export default function EditArticle() {
   const handleSubmit = async (data: {
     title: string;
     content: string;
+    perex: string;
     imageId: string | null;
   }) => {
     if (!token || !articleId) return;
@@ -71,7 +72,7 @@ export default function EditArticle() {
       articleId,
       title: data.title,
       content: data.content,
-      perex: data.content.substring(0, 100) + "...",
+      perex: data.perex,
       imageId: data.imageId ?? null,
       token,
     });
