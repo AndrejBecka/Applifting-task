@@ -48,7 +48,14 @@ export const articleRouter = createTRPCRouter({
       }
 
       const data = (await res.json()) as unknown;
-      return PaginatedArticlesSchema.parse(data);
+      const parsedData = PaginatedArticlesSchema.parse(data);
+
+      parsedData.items.sort(
+        (a, b) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+      );
+
+      return parsedData;
     }),
 
   createArticle: publicProcedure

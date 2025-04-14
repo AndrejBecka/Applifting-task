@@ -3,6 +3,7 @@
 export const PUBLIC_ROUTES = {
   RECENT_ARTICLES: "/",
   ABOUT: "/about",
+  ARTICLE_DETAIL: "/article-detail/",
 };
 
 export const PRIVATE_ROUTES = {
