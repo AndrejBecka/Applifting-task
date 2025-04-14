@@ -3,6 +3,7 @@
 import { useSecureImage } from "~/hooks/getImages-hook";
 import { formatDate } from "~/lib/utils";
 import type { ArticleDetail } from "~/types/article";
+import ReactMarkdown from "react-markdown";
 
 interface ArticleDetailClientProps {
   article: ArticleDetail;
@@ -29,7 +30,7 @@ export function ArticleDetailClient({ article }: ArticleDetailClientProps) {
 
       <div className="prose prose-invert">
         {/* You can parse markdown if needed */}
-        <p>{article.content}</p>
+        <ReactMarkdown>{article.content}</ReactMarkdown>
       </div>
 
       {/* Comments Preview (Optional) */}

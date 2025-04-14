@@ -6,15 +6,21 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { useImageUpload } from "~/hooks/uploadImage-hook";
+import dynamic from "next/dynamic";
+import "@uiw/react-md-editor/markdown-editor.css";
+
+const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
 interface ArticleFormProps {
   initialData?: {
     title: string;
+    perex: string;
     content: string;
   };
   imageUrl?: string | null;
   onSubmit: (data: {
     title: string;
+    perex: string;
     content: string;
     imageId: string | null;
   }) => Promise<void>;
@@ -28,6 +34,7 @@ export function ArticleForm({
   submitLabel = "Publish article",
 }: ArticleFormProps) {
   const [title, setTitle] = useState(initialData?.title ?? "");
+  const [perex, setPerex] = useState(initialData?.perex ?? "");
   const [content, setContent] = useState(initialData?.content ?? "");
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(imageUrl ?? null);
@@ -69,6 +76,7 @@ export function ArticleForm({
 
       await onSubmit({
         title,
+        perex,
         content,
         imageId: uploadedImageId, // null if no new file selected
       });
@@ -118,19 +126,40 @@ export function ArticleForm({
             onChange={handleFileChange}
           />
         </div>
+        <div className="space-y-2">
+          <label htmlFor="content" className="text-sm font-medium">
+            Perex
+          </label>
+          <Textarea
+            id="perex"
+            value={perex}
+            onChange={(e) => setPerex(e.target.value)}
+            placeholder="Supports markdown. Yay!"
+            className="min-h-[100px]"
+          />
+        </div>
 
         {/* CONTENT */}
         <div className="space-y-2">
           <label htmlFor="content" className="text-sm font-medium">
             Content
           </label>
-          <Textarea
+          <MDEditor
+            id="content"
+            value={content}
+            onChange={(val) => setContent(val ?? "")}
+            preview="edit"
+            height={300}
+            extraCommands={[]}
+            data-color-mode="light"
+          />
+          {/* <Textarea
             id="content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
             placeholder="Supports markdown. Yay!"
             className="min-h-[300px]"
-          />
+          /> */}
         </div>
       </form>
 
