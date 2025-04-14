@@ -1,4 +1,3 @@
-// hooks/useImageUpload.ts
 import { useState } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_AppLift_URL!;

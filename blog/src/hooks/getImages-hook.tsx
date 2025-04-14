@@ -1,3 +1,5 @@
+"use client";
+
 import { useEffect, useState } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_AppLift_URL!;
@@ -26,6 +28,9 @@ export function useSecureImage(imageId: string | null, token: string | null) {
 
         const blob = await res.blob();
         const objectUrl = URL.createObjectURL(blob);
+
+        console.log("✅ Image loaded:", { objectUrl, imageId });
+
         setImageUrl(objectUrl);
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") {

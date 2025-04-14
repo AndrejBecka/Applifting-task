@@ -18,6 +18,13 @@ export const PUBLIC_HEADER_ROUTES: NavItem[] = [
   },
 ];
 
+export const PUBLIC_DETAIL_ROUTES = [
+  {
+    title: "Article Detail",
+    href: PUBLIC_ROUTES.ARTICLE_DETAIL,
+  },
+];
+
 export const NAVIGATION_PRIVATE_ROUTES: NavItem[] = [
   {
     title: "My Articles",
