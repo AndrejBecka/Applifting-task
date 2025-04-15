@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -6,23 +7,26 @@ import type { AppRouter } from "~/server/api/root";
 
 export const useLogin = () => {
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
 
-  const { mutate, status } = api.auth.login.useMutation({
+  const loginMutation = api.auth.login.useMutation({
     onSuccess: (data) => {
-      toast.success("Logged in successfully!");
       localStorage.setItem("token", data.access_token);
       window.dispatchEvent(new Event("authChange"));
+      toast.success("Logged in successfully");
+      setError(null);
       router.push("/");
     },
     onError: (err: TRPCClientErrorLike<AppRouter>) => {
-      toast.error(err.message ?? "Login failed");
+      const msg = err?.message ?? "Login failed";
+      setError(msg);
+      toast.error(msg);
     },
   });
 
   return {
-    login: mutate,
-    isLoading: status === "pending",
-    isError: status === "error",
-    isSuccess: status === "success",
+    login: loginMutation.mutate,
+    isLoading: loginMutation.status === "pending",
+    error,
   };
 };
