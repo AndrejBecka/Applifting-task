@@ -12,8 +12,9 @@ export const ArticleSchema = z.object({
 export const CommentSchema = z.object({
   commentId: z.string(),
   content: z.string(),
-  author: z.string(), // or email, or object — as needed
+  author: z.string(),
   createdAt: z.string(),
+  score: z.number(),
 });
 
 export const ArticleDetailSchema = ArticleSchema.extend({

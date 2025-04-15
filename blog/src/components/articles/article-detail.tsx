@@ -4,6 +4,7 @@ import { useSecureImage } from "~/hooks/getImages-hook";
 import { formatDate } from "~/lib/utils";
 import type { ArticleDetail } from "~/types/article";
 import ReactMarkdown from "react-markdown";
+import { CommentSection } from "./comment-section";
 
 interface ArticleDetailClientProps {
   article: ArticleDetail;
@@ -33,22 +34,7 @@ export function ArticleDetailClient({ article }: ArticleDetailClientProps) {
         <ReactMarkdown>{article.content}</ReactMarkdown>
       </div>
 
-      {/* Comments Preview (Optional) */}
-      {article.comments?.length > 0 && (
-        <div className="mt-8">
-          <h2 className="mb-4 text-xl font-semibold">Comments</h2>
-          <ul className="space-y-4">
-            {article.comments.map((comment) => (
-              <li key={comment.commentId}>
-                <div className="rounded bg-white/5 p-4 shadow">
-                  <p className="font-semibold">{comment.author}</p>
-                  <p className="text-sm">{comment.content}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <CommentSection articleId={article.articleId} />
     </div>
   );
 }
