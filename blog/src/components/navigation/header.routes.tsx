@@ -12,10 +12,6 @@ export const PUBLIC_HEADER_ROUTES: NavItem[] = [
     title: "Recent Articles",
     href: PUBLIC_ROUTES.RECENT_ARTICLES,
   },
-  {
-    title: "About",
-    href: PUBLIC_ROUTES.ABOUT,
-  },
 ];
 
 export const PUBLIC_DETAIL_ROUTES = [

@@ -51,7 +51,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
                   </Button>
                   <div className="text-muted-foreground flex items-center text-xs">
                     <MessageSquare className="mr-1 h-3 w-3" />
-                    {article.commentsCount ?? 0} comments
+                    {article.commentsCount ?? 2} comments
                   </div>
                 </div>
               </div>

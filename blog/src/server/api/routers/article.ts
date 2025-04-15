@@ -3,9 +3,7 @@ import { createTRPCRouter, publicProcedure } from "../trpc";
 import {
   ArticleCreateSchema,
   ArticleDetailSchema,
-  ArticleImageSchema,
   ArticleUpdateSchema,
-  ImageInfoSchema,
   PaginatedArticlesSchema,
 } from "~/schemas/article.schema";
 
@@ -23,7 +21,6 @@ export const articleRouter = createTRPCRouter({
   getArticle: publicProcedure
     .input(
       z.object({
-        token: z.string(),
         offset: z.number().optional().default(0),
         limit: z.number().optional().default(10),
       }),
@@ -38,7 +35,6 @@ export const articleRouter = createTRPCRouter({
         headers: {
           "Content-Type": "application/json",
           "x-api-key": API_KEY,
-          Authorization: `Bearer ${input.token}`,
         },
       });
 

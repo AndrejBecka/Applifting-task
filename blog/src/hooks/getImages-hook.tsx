@@ -5,11 +5,11 @@ import { useEffect, useState } from "react";
 const API_URL = process.env.NEXT_PUBLIC_AppLift_URL!;
 const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
 
-export function useSecureImage(imageId: string | null, token: string | null) {
+export function useSecureImage(imageId: string | null) {
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!imageId || !token) return;
+    if (!imageId) return;
 
     const controller = new AbortController();
 
@@ -18,7 +18,6 @@ export function useSecureImage(imageId: string | null, token: string | null) {
         const res = await fetch(`${API_URL}/images/${imageId}`, {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`,
             "x-api-key": API_KEY,
           },
           signal: controller.signal,
@@ -46,7 +45,7 @@ export function useSecureImage(imageId: string | null, token: string | null) {
         URL.revokeObjectURL(imageUrl);
       }
     };
-  }, [imageId, token]);
+  }, [imageId]);
 
   return imageUrl;
 }

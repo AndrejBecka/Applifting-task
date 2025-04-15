@@ -3,17 +3,16 @@
 import { useSecureImage } from "~/hooks/getImages-hook";
 import { formatDate } from "~/lib/utils";
 import type { ArticleDetail } from "~/types/article";
-import ReactMarkdown from "react-markdown";
 import { CommentSection } from "./comment-section";
+import MDEditor from "@uiw/react-md-editor";
+import { Separator } from "../ui/separator";
 
 interface ArticleDetailClientProps {
   article: ArticleDetail;
 }
 
 export function ArticleDetailClient({ article }: ArticleDetailClientProps) {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  const secureImageUrl = useSecureImage(article.imageId, token);
+  const secureImageUrl = useSecureImage(article.imageId);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
@@ -29,10 +28,12 @@ export function ArticleDetailClient({ article }: ArticleDetailClientProps) {
         />
       )}
 
-      <div className="prose prose-invert">
-        {/* You can parse markdown if needed */}
-        <ReactMarkdown>{article.content}</ReactMarkdown>
-      </div>
+      <MDEditor.Markdown
+        style={{ backgroundColor: "white", color: "black" }}
+        source={article.content}
+      />
+
+      <Separator className="my-12" />
 
       <CommentSection articleId={article.articleId} />
     </div>

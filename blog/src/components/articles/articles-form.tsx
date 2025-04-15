@@ -150,7 +150,6 @@ export function ArticleForm({
             onChange={(val) => setContent(val ?? "")}
             preview="edit"
             height={300}
-            extraCommands={[]}
             data-color-mode="light"
           />
           {/* <Textarea

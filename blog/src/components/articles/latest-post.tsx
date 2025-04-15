@@ -13,12 +13,7 @@ export function LatestPostClient({ articles }: LatestPostClientProps) {
     (Article & { imageUrl: string | null })[]
   >([]);
 
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("token") : null;
-
   useEffect(() => {
-    if (!token) return;
-
     const fetchImages = async () => {
       const enriched = await Promise.all(
         articles.map(async (article) => {
@@ -27,7 +22,6 @@ export function LatestPostClient({ articles }: LatestPostClientProps) {
               `${process.env.NEXT_PUBLIC_AppLift_URL}/images/${article.imageId}`,
               {
                 headers: {
-                  Authorization: `Bearer ${token}`,
                   "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
                 },
               },
@@ -48,7 +42,7 @@ export function LatestPostClient({ articles }: LatestPostClientProps) {
     };
 
     void fetchImages();
-  }, [articles, token]);
+  }, [articles]);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6 py-6">
