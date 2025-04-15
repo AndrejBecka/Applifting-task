@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { Button } from "../ui/button";
-import { Input } from "../ui/input";
 import { formatDate } from "~/lib/utils";
 import MDEditor from "@uiw/react-md-editor";
 import { mockComments } from "~/lib/comments-mock";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
+import { Avatar, AvatarFallback } from "../ui/avatar";
 
 interface Comment {
   commentId: string;
@@ -58,6 +58,14 @@ export function CommentSection({ articleId }: CommentsProps) {
       <div className="mb-8 space-y-6">
         {comments.map((comment) => (
           <div key={comment.commentId} className="flex gap-3">
+            <Avatar className="h-8 w-8">
+              <AvatarFallback>
+                {comment.author
+                  .split(" ")
+                  .map((n) => n[0])
+                  .join("")}
+              </AvatarFallback>
+            </Avatar>
             <div className="flex-1">
               <div className="mb-1 flex items-center gap-2">
                 <p className="text-sm font-medium">{comment.author}</p>
@@ -110,15 +118,16 @@ export function CommentSection({ articleId }: CommentsProps) {
       <form onSubmit={handleSubmitComment} className="space-y-4">
         <h3 className="text-lg font-medium">Join the discussion</h3>
         <div className="flex gap-3">
+          <Avatar className="h-8 w-8">
+            <AvatarFallback>YA</AvatarFallback>
+          </Avatar>
           <div className="flex-1">
             <MDEditor
-              id="comment"
               value={newComment}
               onChange={(val) => setNewComment(val ?? "")}
-              preview="edit"
-              extraCommands={[]}
-              minHeight={140}
+              minHeight={120}
               data-color-mode="light"
+              preview="edit"
             />
             <div className="mt-2 flex justify-end">
               <Button
