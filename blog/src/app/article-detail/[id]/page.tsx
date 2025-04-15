@@ -11,12 +11,7 @@ interface ArticleDetailPageProps {
 export default async function ArticleDetailPage({
   params,
 }: ArticleDetailPageProps) {
-  const { id } = await params;
-
-  const article = await api.article.getArticleDetail({
-    articleId: id,
-    token: "",
-  });
+  const article = await api.article.getArticleDetail({ articleId: params.id });
 
   if (!article) return notFound();
 

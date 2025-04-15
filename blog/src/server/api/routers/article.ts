@@ -87,7 +87,6 @@ export const articleRouter = createTRPCRouter({
     .input(
       z.object({
         articleId: z.string().uuid(),
-        token: z.string(),
       }),
     )
     .query(async ({ input }) => {
@@ -95,7 +94,6 @@ export const articleRouter = createTRPCRouter({
         headers: {
           "Content-Type": "application/json",
           "x-api-key": API_KEY,
-          Authorization: `Bearer ${input.token}`,
         },
       });
 

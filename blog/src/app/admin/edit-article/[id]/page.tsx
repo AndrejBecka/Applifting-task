@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { api } from "~/trpc/react";
 import { PRIVATE_ROUTES } from "~/routes/routes";
 import { ArticleForm } from "~/components/articles/articles-form";
-import { useSecureImage } from "~/hooks/getImages-hook";
+import { useImageHandler } from "~/hooks/image-handler-hook";
 
 export default function EditArticle() {
   const router = useRouter();
@@ -28,7 +28,6 @@ export default function EditArticle() {
 
   const { data: article, isLoading } = api.article.getArticleDetail.useQuery(
     {
-      token,
       articleId: articleId ?? "",
     },
     {
@@ -38,9 +37,9 @@ export default function EditArticle() {
     },
   );
 
+  const { useSecureImage } = useImageHandler();
   const fetchedImage = useSecureImage(
     isHydrated ? (article?.imageId ?? null) : null,
-    token,
   );
 
   useEffect(() => {

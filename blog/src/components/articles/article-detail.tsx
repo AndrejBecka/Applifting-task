@@ -1,6 +1,6 @@
 "use client";
 
-import { useSecureImage } from "~/hooks/getImages-hook";
+import { useImageHandler } from "~/hooks/image-handler-hook";
 import { formatDate } from "~/lib/utils";
 import type { ArticleDetail } from "~/types/article";
 import { CommentSection } from "./comment-section";
@@ -12,25 +12,30 @@ interface ArticleDetailClientProps {
 }
 
 export function ArticleDetailClient({ article }: ArticleDetailClientProps) {
+  const { useSecureImage } = useImageHandler();
   const secureImageUrl = useSecureImage(article.imageId);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="mb-2 text-3xl font-bold">{article.title}</h1>
-      <p className="text-muted-foreground mb-4 text-sm">
-        Published on {formatDate(article.createdAt)}
-      </p>
+      <header className="mb-6">
+        <h1 className="mb-2 text-3xl font-bold">{article.title}</h1>
+        <p className="text-muted-foreground text-sm">
+          Published on {formatDate(article.createdAt)}
+        </p>
+      </header>
+
       {secureImageUrl && (
         <img
           src={secureImageUrl}
-          alt={article.title}
+          alt={article.title || "Article cover"}
           className="mb-6 w-full rounded-md object-cover shadow"
+          loading="lazy"
         />
       )}
 
       <MDEditor.Markdown
-        style={{ backgroundColor: "white", color: "black" }}
         source={article.content}
+        style={{ backgroundColor: "white", color: "black" }}
       />
 
       <Separator className="my-12" />

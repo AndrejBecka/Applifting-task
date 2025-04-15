@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
-import { useImageUpload } from "~/hooks/uploadImage-hook";
+import { useImageHandler } from "~/hooks/image-handler-hook";
 import dynamic from "next/dynamic";
 import "@uiw/react-md-editor/markdown-editor.css";
 
@@ -39,7 +39,7 @@ export function ArticleForm({
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(imageUrl ?? null);
 
-  const { uploadImage, isUploading, error: uploadError } = useImageUpload();
+  const { uploadImage, isUploading, error: uploadError } = useImageHandler();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
