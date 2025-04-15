@@ -7,23 +7,22 @@ import type { AppRouter } from "~/server/api/root";
 export const useLogin = () => {
   const router = useRouter();
 
-  const loginMutation = api.auth.login.useMutation({
+  const { mutate, status } = api.auth.login.useMutation({
     onSuccess: (data) => {
       toast.success("Logged in successfully!");
       localStorage.setItem("token", data.access_token);
-      // Dispatch auth change event
       window.dispatchEvent(new Event("authChange"));
       router.push("/");
     },
-    onError: (error: TRPCClientErrorLike<AppRouter>) => {
-      toast.error(error?.message ?? "Login failed");
+    onError: (err: TRPCClientErrorLike<AppRouter>) => {
+      toast.error(err.message ?? "Login failed");
     },
   });
 
-  const isLoading = loginMutation.status === "pending";
-
   return {
-    login: loginMutation.mutate,
-    isLoading,
+    login: mutate,
+    isLoading: status === "pending",
+    isError: status === "error",
+    isSuccess: status === "success",
   };
 };
