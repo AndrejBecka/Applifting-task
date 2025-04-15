@@ -36,8 +36,6 @@ export const authRouter = createTRPCRouter({
       const data = (await res.json()) as unknown;
       const validatedData = LoginResponseSchema.parse(data);
 
-      // Optionally: Store token in a cookie/session here
-
       return validatedData;
     }),
 });

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc";
 import {
   ArticleCreateSchema,
   ArticleDetailSchema,
@@ -108,7 +108,7 @@ export const articleRouter = createTRPCRouter({
       return ArticleDetailSchema.parse(data);
     }),
 
-  updateArticle: publicProcedure
+  updateArticle: privateProcedure
     .input(
       z.object({
         articleId: z.string().uuid(),
@@ -118,8 +118,6 @@ export const articleRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       const { token, articleId, ...articlePayload } = input;
-
-      console.log("🛠 Sent payload to PATCH /articles/:id:", articlePayload);
 
       const res = await fetch(`${API_URL}/articles/${articleId}`, {
         method: "PATCH",
@@ -140,7 +138,7 @@ export const articleRouter = createTRPCRouter({
       return ArticleDetailSchema.parse(data);
     }),
 
-  deleteArticle: publicProcedure
+  deleteArticle: privateProcedure
     .input(
       z.object({
         articleId: z.string().uuid(),
