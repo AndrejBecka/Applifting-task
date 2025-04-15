@@ -78,22 +78,21 @@ export function ArticleForm({
         title,
         perex,
         content,
-        imageId: uploadedImageId, // null if no new file selected
+        imageId: uploadedImageId,
       });
     } catch (error) {
-      console.error("Error processing request:", error);
-      toast.error(
-        (error instanceof Error
+      const message =
+        error instanceof Error
           ? error.message
-          : "Failed to process your request") || "Unknown error",
-      );
+          : "Failed to process your request";
+      toast.error(message);
     }
   };
 
   return (
     <div className="rounded-md border bg-white p-6">
       <form id="article-form" onSubmit={handleSubmit} className="space-y-6">
-        {/* TITLE */}
+        {/* Title */}
         <div className="space-y-2">
           <label htmlFor="title" className="text-sm font-medium">
             Article Title
@@ -107,13 +106,13 @@ export function ArticleForm({
           />
         </div>
 
-        {/* IMAGE */}
+        {/* Image Upload */}
         <div className="space-y-2">
           <label className="text-sm font-medium">Featured Image</label>
-          {(imageFile ? previewUrl : imageUrl) && (
+          {(previewUrl ?? imageUrl) && (
             <img
-              src={imageFile ? (previewUrl ?? "") : (imageUrl ?? "")}
-              alt="Uploaded"
+              src={previewUrl ?? imageUrl ?? ""}
+              alt="Uploaded preview"
               width={160}
               height={160}
               className="mb-2 max-h-40 rounded border shadow"
@@ -126,20 +125,22 @@ export function ArticleForm({
             onChange={handleFileChange}
           />
         </div>
+
+        {/* Perex */}
         <div className="space-y-2">
-          <label htmlFor="content" className="text-sm font-medium">
+          <label htmlFor="perex" className="text-sm font-medium">
             Perex
           </label>
           <Textarea
             id="perex"
             value={perex}
             onChange={(e) => setPerex(e.target.value)}
-            placeholder="Supports markdown. Yay!"
+            placeholder="Short summary (markdown supported)"
             className="min-h-[100px]"
           />
         </div>
 
-        {/* CONTENT */}
+        {/* Content */}
         <div className="space-y-2">
           <label htmlFor="content" className="text-sm font-medium">
             Content
@@ -152,13 +153,6 @@ export function ArticleForm({
             height={300}
             data-color-mode="light"
           />
-          {/* <Textarea
-            id="content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Supports markdown. Yay!"
-            className="min-h-[300px]"
-          /> */}
         </div>
       </form>
 

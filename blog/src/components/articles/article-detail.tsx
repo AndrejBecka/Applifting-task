@@ -7,11 +7,11 @@ import { CommentSection } from "./comment-section";
 import MDEditor from "@uiw/react-md-editor";
 import { Separator } from "../ui/separator";
 
-interface ArticleDetailClientProps {
+interface ArticleDetailProps {
   article: ArticleDetail;
 }
 
-export function ArticleDetailClient({ article }: ArticleDetailClientProps) {
+export function ArticleDetail({ article }: ArticleDetailProps) {
   const { useSecureImage } = useImageHandler();
   const secureImageUrl = useSecureImage(article.imageId);
 
@@ -33,10 +33,12 @@ export function ArticleDetailClient({ article }: ArticleDetailClientProps) {
         />
       )}
 
-      <MDEditor.Markdown
-        source={article.content}
-        style={{ backgroundColor: "white", color: "black" }}
-      />
+      <section className="prose prose-neutral max-w-none">
+        <MDEditor.Markdown
+          source={article.content}
+          style={{ backgroundColor: "white", color: "black" }}
+        />
+      </section>
 
       <Separator className="my-12" />
 

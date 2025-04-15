@@ -4,11 +4,14 @@ import { useEffect, useState } from "react";
 import type { Article } from "~/types/article";
 import { ArticleCard } from "./article-card";
 
-interface LatestPostClientProps {
+interface LatestPostProps {
   articles: Article[];
 }
 
-export function LatestPostClient({ articles }: LatestPostClientProps) {
+const API_URL = process.env.NEXT_PUBLIC_AppLift_URL!;
+const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
+
+export function LatestPost({ articles }: LatestPostProps) {
   const [articlesWithImages, setArticlesWithImages] = useState<
     (Article & { imageUrl: string | null })[]
   >([]);
@@ -17,31 +20,42 @@ export function LatestPostClient({ articles }: LatestPostClientProps) {
     const fetchImages = async () => {
       const enriched = await Promise.all(
         articles.map(async (article) => {
+          if (!article.imageId) {
+            return { ...article, imageUrl: null };
+          }
+
           try {
-            const res = await fetch(
-              `${process.env.NEXT_PUBLIC_AppLift_URL}/images/${article.imageId}`,
-              {
-                headers: {
-                  "x-api-key": process.env.NEXT_PUBLIC_API_KEY!,
-                },
+            const res = await fetch(`${API_URL}/images/${article.imageId}`, {
+              headers: {
+                "x-api-key": API_KEY,
               },
-            );
+            });
 
             if (!res.ok) throw new Error("Image fetch failed");
 
             const blob = await res.blob();
-            const objectUrl = URL.createObjectURL(blob);
-            return { ...article, imageUrl: objectUrl };
+            const url = URL.createObjectURL(blob);
+
+            return { ...article, imageUrl: url };
           } catch (err) {
-            console.error("Error fetching image", err);
+            console.error("Image fetch error:", err);
             return { ...article, imageUrl: null };
           }
         }),
       );
+
       setArticlesWithImages(enriched);
     };
 
     void fetchImages();
+
+    return () => {
+      articlesWithImages.forEach((a) => {
+        if (a.imageUrl?.startsWith("blob:")) {
+          URL.revokeObjectURL(a.imageUrl);
+        }
+      });
+    };
   }, [articles]);
 
   return (
@@ -52,9 +66,15 @@ export function LatestPostClient({ articles }: LatestPostClientProps) {
         </h1>
       </div>
       <div>
-        {articlesWithImages.map((article) => (
-          <ArticleCard key={article.articleId} article={article} />
-        ))}
+        {articlesWithImages.length === 0 ? (
+          <p className="text-muted-foreground text-center">
+            No articles found.
+          </p>
+        ) : (
+          articlesWithImages.map((article) => (
+            <ArticleCard key={article.articleId} article={article} />
+          ))
+        )}
       </div>
     </div>
   );
