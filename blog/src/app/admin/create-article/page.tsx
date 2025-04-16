@@ -1,13 +1,15 @@
 "use client";
 
-import { useEffect } from "react";
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 import { PRIVATE_ROUTES } from "~/routes/routes";
 import { ArticleForm } from "~/components/articles/articles-form";
+import { useAuthGuard } from "~/hooks/auth-guard";
 
 export default function CreateArticle() {
+  const { isAuthenticated, isLoading } = useAuthGuard();
+
   const router = useRouter();
   const createArticle = api.article.createArticle.useMutation({
     onSuccess: () => {
@@ -19,30 +21,28 @@ export default function CreateArticle() {
     },
   });
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/login");
-    }
-  }, [router]);
-
   const handleSubmit = async (data: {
     title: string;
     content: string;
     perex: string;
     imageId: string | null;
   }) => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
     await createArticle.mutateAsync({
       title: data.title,
       content: data.content,
       perex: data.perex,
       imageId: data.imageId ?? "",
-      token,
     });
   };
+
+  if (isLoading) {
+    return (
+      <div className="text-muted-foreground flex min-h-[50vh] items-center justify-center">
+        <p className="animate-pulse text-sm">Checking authentication...</p>
+      </div>
+    );
+  }
+  if (!isAuthenticated) return null;
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
