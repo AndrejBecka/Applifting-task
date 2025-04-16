@@ -1,6 +1,8 @@
 import { api } from "~/trpc/server";
 import { ArticlesTable } from "~/components/articles/articles-table";
 import type { Article } from "~/types/article";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 interface ArticleWithComments extends Article {
   commentCount: number;
@@ -8,6 +10,12 @@ interface ArticleWithComments extends Article {
 
 export default async function MyArticles() {
   const { items: articles } = await api.article.getArticle({});
+
+  const token = (await cookies()).get("access_token")?.value;
+
+  if (!token) {
+    redirect("/login");
+  }
 
   const enrichedArticles = await Promise.all(
     articles.map(async (article) => {

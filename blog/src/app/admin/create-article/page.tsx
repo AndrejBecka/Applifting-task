@@ -5,8 +5,11 @@ import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
 import { PRIVATE_ROUTES } from "~/routes/routes";
 import { ArticleForm } from "~/components/articles/articles-form";
+import { useAuthGuard } from "~/hooks/auth-guard";
 
 export default function CreateArticle() {
+  const { isAuthenticated, isLoading } = useAuthGuard();
+
   const router = useRouter();
   const createArticle = api.article.createArticle.useMutation({
     onSuccess: () => {
@@ -31,6 +34,15 @@ export default function CreateArticle() {
       imageId: data.imageId ?? "",
     });
   };
+
+  if (isLoading) {
+    return (
+      <div className="text-muted-foreground flex min-h-[50vh] items-center justify-center">
+        <p className="animate-pulse text-sm">Checking authentication...</p>
+      </div>
+    );
+  }
+  if (!isAuthenticated) return null;
 
   return (
     <div className="mx-auto max-w-4xl space-y-6">
