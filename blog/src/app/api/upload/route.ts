@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAccessTokenFromCookies } from "~/lib/auth-cookies";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = process.env.NEXT_PUBLIC_AppLift_URL;
 
 export async function POST(req: Request) {
   const token = getAccessTokenFromCookies();

@@ -100,10 +100,13 @@ export function ArticleForm({
         </div>
 
         <div className="space-y-2">
-          <label className="text-sm font-medium">Featured Image</label>
+          <label htmlFor="picture" className="text-sm font-medium">
+            Featured Image
+          </label>
           {(previewUrl ?? imageUrl) && (
             <img
               src={previewUrl ?? imageUrl ?? ""}
+              id="picture"
               alt="Uploaded preview"
               width={160}
               height={160}
