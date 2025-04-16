@@ -54,35 +54,6 @@ export const articleRouter = createTRPCRouter({
       return parsedData;
     }),
 
-  createArticle: publicProcedure
-    .input(
-      z.object({
-        ...ArticleCreateSchema.shape,
-        token: z.string(),
-      }),
-    )
-    .mutation(async ({ input }) => {
-      const { token, ...articlePayload } = input;
-
-      const res = await fetch(`${API_URL}/articles`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": API_KEY,
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(articlePayload),
-      });
-
-      if (!res.ok) {
-        const error = (await res.json().catch(() => ({}))) as unknown;
-        throw new Error(extractErrorMessage(error, "Failed to create article"));
-      }
-
-      const data = (await res.json()) as unknown;
-      return ArticleDetailSchema.parse(data);
-    }),
-
   getArticleDetail: publicProcedure
     .input(
       z.object({
@@ -108,23 +79,46 @@ export const articleRouter = createTRPCRouter({
       return ArticleDetailSchema.parse(data);
     }),
 
+  createArticle: privateProcedure
+    .input(ArticleCreateSchema)
+    .mutation(async ({ input, ctx }) => {
+      const { ...articlePayload } = input;
+
+      const res = await fetch(`${API_URL}/articles`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": API_KEY,
+          Authorization: `Bearer ${ctx.session.token}`,
+        },
+        body: JSON.stringify(articlePayload),
+      });
+
+      if (!res.ok) {
+        const error = (await res.json().catch(() => ({}))) as unknown;
+        throw new Error(extractErrorMessage(error, "Failed to create article"));
+      }
+
+      const data = (await res.json()) as unknown;
+      return ArticleDetailSchema.parse(data);
+    }),
+
   updateArticle: privateProcedure
     .input(
       z.object({
         articleId: z.string().uuid(),
-        token: z.string(),
         ...ArticleUpdateSchema.shape,
       }),
     )
-    .mutation(async ({ input }) => {
-      const { token, articleId, ...articlePayload } = input;
+    .mutation(async ({ input, ctx }) => {
+      const { articleId, ...articlePayload } = input;
 
       const res = await fetch(`${API_URL}/articles/${articleId}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           "x-api-key": API_KEY,
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${ctx.session.token}`,
         },
         body: JSON.stringify(articlePayload),
       });

@@ -1,19 +1,12 @@
 "use client";
+
 import { useEffect, useState } from "react";
-
-const API_URL = process.env.NEXT_PUBLIC_AppLift_URL!;
-const API_KEY = process.env.NEXT_PUBLIC_API_KEY!;
-
-interface UploadImageResponse {
-  imageId: string;
-  name: string;
-}
 
 export const useImageHandler = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const uploadImage = async (file: File, token: string): Promise<string> => {
+  const uploadImage = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append("image", file);
 
@@ -21,20 +14,17 @@ export const useImageHandler = () => {
     setError(null);
 
     try {
-      const res = await fetch(`${API_URL}/images`, {
+      const res = await fetch("/api/upload", {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "x-api-key": API_KEY,
-        },
         body: formData,
+        credentials: "include", // sends cookie
       });
 
       if (!res.ok) {
         throw new Error(`Upload failed: ${await res.text()}`);
       }
 
-      const result = (await res.json()) as UploadImageResponse[];
+      const result = (await res.json()) as { imageId: string; name: string }[];
 
       if (!result?.[0]?.imageId) {
         throw new Error("Image ID missing in response");
@@ -60,9 +50,8 @@ export const useImageHandler = () => {
 
       const fetchImage = async () => {
         try {
-          const res = await fetch(`${API_URL}/images/${imageId}`, {
-            method: "GET",
-            headers: { "x-api-key": API_KEY },
+          const res = await fetch(`/api/image?imageId=${imageId}`, {
+            credentials: "include",
             signal: controller.signal,
           });
 

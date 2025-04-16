@@ -9,7 +9,7 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
-
+import { parse } from "cookie";
 /**
  * 1. CONTEXT
  *
@@ -23,8 +23,13 @@ import { ZodError } from "zod";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
+  const cookieHeader = opts.headers.get("cookie") ?? "";
+  const cookies = parse(cookieHeader);
+  const accessToken = cookies.access_token ?? null;
   return {
     ...opts,
+    apiKey: process.env.API_KEY!,
+    accessToken,
   };
 };
 
@@ -101,10 +106,7 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * are logged in.
  */
 const isAuthed = t.middleware(({ ctx, next }) => {
-  const token =
-    ctx.headers.get("Authorization") ?? ctx.headers.get("authorization");
-
-  if (!token?.startsWith("Bearer ")) {
+  if (!ctx.accessToken) {
     throw new Error("Unauthorized");
   }
 
@@ -112,7 +114,7 @@ const isAuthed = t.middleware(({ ctx, next }) => {
     ctx: {
       ...ctx,
       session: {
-        token: token.replace("Bearer ", ""),
+        token: ctx.accessToken,
       },
     },
   });

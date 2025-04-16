@@ -60,18 +60,12 @@ export function ArticleForm({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-      toast.error("You must be logged in");
-      return;
-    }
 
     try {
       let uploadedImageId: string | null = null;
 
       if (imageFile) {
-        uploadedImageId = await uploadImage(imageFile, token);
+        uploadedImageId = await uploadImage(imageFile);
       }
 
       await onSubmit({

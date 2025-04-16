@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import { toast } from "sonner";
 import { api } from "~/trpc/react";
 import { useRouter } from "next/navigation";
@@ -19,28 +18,17 @@ export default function CreateArticle() {
     },
   });
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/login");
-    }
-  }, [router]);
-
   const handleSubmit = async (data: {
     title: string;
     content: string;
     perex: string;
     imageId: string | null;
   }) => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
-
     await createArticle.mutateAsync({
       title: data.title,
       content: data.content,
       perex: data.perex,
       imageId: data.imageId ?? "",
-      token,
     });
   };
 

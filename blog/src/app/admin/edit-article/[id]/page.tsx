@@ -15,9 +15,6 @@ export default function EditArticle() {
   const [isHydrated, setIsHydrated] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
-  const token =
-    typeof window !== "undefined" ? (localStorage.getItem("token") ?? "") : "";
-
   const articleId = typeof params.id === "string" ? params.id : null;
 
   useEffect(() => {
@@ -31,7 +28,7 @@ export default function EditArticle() {
       articleId: articleId ?? "",
     },
     {
-      enabled: !!articleId && !!token,
+      enabled: !!articleId,
       refetchOnMount: true,
       staleTime: 0,
     },
@@ -65,7 +62,7 @@ export default function EditArticle() {
     perex: string;
     imageId: string | null;
   }) => {
-    if (!token || !articleId) return;
+    if (!articleId) return;
 
     await updateArticle.mutateAsync({
       articleId,
@@ -73,7 +70,6 @@ export default function EditArticle() {
       content: data.content,
       perex: data.perex,
       imageId: data.imageId ?? null,
-      token,
     });
   };
 

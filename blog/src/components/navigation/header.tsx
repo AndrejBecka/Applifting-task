@@ -1,50 +1,54 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "~/components/ui/button";
-import { ArrowRight, LogOut } from "lucide-react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
+import { ArrowRight, LogOut } from "lucide-react";
+import { Button } from "~/components/ui/button";
 import {
   PUBLIC_HEADER_ROUTES,
   NAVIGATION_PRIVATE_ROUTES,
 } from "./header.routes";
 import { cn } from "~/lib/utils";
-import { useState, useEffect } from "react";
 
 export default function Header() {
   const pathname = usePathname();
-
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   useEffect(() => {
-    const checkAuth = () => {
-      const token = localStorage.getItem("token");
-      setIsLoggedIn(!!token);
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch("/api/token", {
+          method: "GET",
+          credentials: "include",
+        });
+
+        const data = (await res.json()) as { isLoggedIn: boolean };
+        setIsLoggedIn(data.isLoggedIn);
+      } catch (error) {
+        console.error("Auth check failed:", error);
+        setIsLoggedIn(false);
+      }
     };
 
-    checkAuth();
+    fetchStatus();
 
-    window.addEventListener("storage", checkAuth);
-
-    window.addEventListener("authChange", checkAuth);
+    window.addEventListener("authChange", fetchStatus);
 
     return () => {
-      window.removeEventListener("storage", checkAuth);
-      window.removeEventListener("authChange", checkAuth);
+      window.removeEventListener("authChange", fetchStatus);
     };
   }, []);
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    setIsLoggedIn(false);
+  const handleLogout = async () => {
+    await fetch("/api/logout", { method: "POST" });
     window.dispatchEvent(new Event("authChange"));
+    setIsLoggedIn(false);
     router.push("/");
   };
 
-  const isActive = (path: string): boolean => {
-    return pathname === path;
-  };
+  const isActive = (path: string): boolean => pathname === path;
 
   const headerNavigation = isLoggedIn
     ? [...PUBLIC_HEADER_ROUTES, ...NAVIGATION_PRIVATE_ROUTES]
@@ -56,14 +60,10 @@ export default function Header() {
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
             <svg
-              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-6 w-6"
             >
               <path d="M12 19c0-3.87 3.13-7 7-7h1c-3.87 0-7-3.13-7-7 0 3.87-3.13 7-7 7h-1c3.87 0 7 3.13 7 7Z" />
             </svg>
@@ -86,7 +86,7 @@ export default function Header() {
           </nav>
         </div>
         <div className="flex items-center gap-4">
-          {!!isLoggedIn ? (
+          {isLoggedIn ? (
             <Button variant="ghost" size="sm" onClick={handleLogout}>
               Log out
               <LogOut className="ml-1 h-4 w-4" />
