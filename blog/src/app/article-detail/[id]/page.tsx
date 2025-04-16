@@ -3,12 +3,11 @@ import { api, HydrateClient } from "~/trpc/server";
 import { ArticleDetail } from "~/components/articles/article-detail";
 
 interface ArticleDetailPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
-export default async function ArticleDetailPage({
-  params,
-}: ArticleDetailPageProps) {
+export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
+  const params = await props.params;
   const { id } = params;
 
   const article = await api.article.getArticleDetail({ articleId: id });
