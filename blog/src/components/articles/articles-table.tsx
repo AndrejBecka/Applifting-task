@@ -33,7 +33,7 @@ export function ArticlesTable({ articles }: ArticlesTableProps) {
       "Are you sure you want to delete this article?",
     );
     if (confirmed) {
-      deleteArticle.mutate({ articleId, token });
+      deleteArticle.mutate({ articleId });
     }
   };
 

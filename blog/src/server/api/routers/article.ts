@@ -142,16 +142,15 @@ export const articleRouter = createTRPCRouter({
     .input(
       z.object({
         articleId: z.string().uuid(),
-        token: z.string(),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const res = await fetch(`${API_URL}/articles/${input.articleId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           "x-api-key": API_KEY,
-          Authorization: `Bearer ${input.token}`,
+          Authorization: `Bearer ${ctx.session.token}`,
         },
       });
 
