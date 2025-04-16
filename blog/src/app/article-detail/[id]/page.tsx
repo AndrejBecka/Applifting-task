@@ -1,28 +1,22 @@
 import { notFound } from "next/navigation";
 import { api, HydrateClient } from "~/trpc/server";
-import { ArticleDetailClient } from "~/components/articles/article-detail";
+import { ArticleDetail } from "~/components/articles/article-detail";
 
 interface ArticleDetailPageProps {
-  params: {
-    id: string;
-  };
+  params: Promise<{ id: string }>;
 }
 
-export default async function ArticleDetailPage({
-  params,
-}: ArticleDetailPageProps) {
-  const { id } = await params;
+export default async function ArticleDetailPage(props: ArticleDetailPageProps) {
+  const params = await props.params;
+  const { id } = params;
 
-  const article = await api.article.getArticleDetail({
-    articleId: id,
-    token: "",
-  });
+  const article = await api.article.getArticleDetail({ articleId: id });
 
   if (!article) return notFound();
 
   return (
     <HydrateClient>
-      <ArticleDetailClient article={article} />
+      <ArticleDetail article={article} />
     </HydrateClient>
   );
 }

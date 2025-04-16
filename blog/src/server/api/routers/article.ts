@@ -1,11 +1,9 @@
 import { z } from "zod";
-import { createTRPCRouter, publicProcedure } from "../trpc";
+import { createTRPCRouter, privateProcedure, publicProcedure } from "../trpc";
 import {
   ArticleCreateSchema,
   ArticleDetailSchema,
-  ArticleImageSchema,
   ArticleUpdateSchema,
-  ImageInfoSchema,
   PaginatedArticlesSchema,
 } from "~/schemas/article.schema";
 
@@ -23,7 +21,6 @@ export const articleRouter = createTRPCRouter({
   getArticle: publicProcedure
     .input(
       z.object({
-        token: z.string(),
         offset: z.number().optional().default(0),
         limit: z.number().optional().default(10),
       }),
@@ -38,7 +35,6 @@ export const articleRouter = createTRPCRouter({
         headers: {
           "Content-Type": "application/json",
           "x-api-key": API_KEY,
-          Authorization: `Bearer ${input.token}`,
         },
       });
 
@@ -91,7 +87,6 @@ export const articleRouter = createTRPCRouter({
     .input(
       z.object({
         articleId: z.string().uuid(),
-        token: z.string(),
       }),
     )
     .query(async ({ input }) => {
@@ -99,7 +94,6 @@ export const articleRouter = createTRPCRouter({
         headers: {
           "Content-Type": "application/json",
           "x-api-key": API_KEY,
-          Authorization: `Bearer ${input.token}`,
         },
       });
 
@@ -114,7 +108,7 @@ export const articleRouter = createTRPCRouter({
       return ArticleDetailSchema.parse(data);
     }),
 
-  updateArticle: publicProcedure
+  updateArticle: privateProcedure
     .input(
       z.object({
         articleId: z.string().uuid(),
@@ -124,8 +118,6 @@ export const articleRouter = createTRPCRouter({
     )
     .mutation(async ({ input }) => {
       const { token, articleId, ...articlePayload } = input;
-
-      console.log("🛠 Sent payload to PATCH /articles/:id:", articlePayload);
 
       const res = await fetch(`${API_URL}/articles/${articleId}`, {
         method: "PATCH",
@@ -146,20 +138,19 @@ export const articleRouter = createTRPCRouter({
       return ArticleDetailSchema.parse(data);
     }),
 
-  deleteArticle: publicProcedure
+  deleteArticle: privateProcedure
     .input(
       z.object({
         articleId: z.string().uuid(),
-        token: z.string(),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const res = await fetch(`${API_URL}/articles/${input.articleId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
           "x-api-key": API_KEY,
-          Authorization: `Bearer ${input.token}`,
+          Authorization: `Bearer ${ctx.session.token}`,
         },
       });
 

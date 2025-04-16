@@ -100,4 +100,23 @@ const timingMiddleware = t.middleware(async ({ next, path }) => {
  * guarantee that a user querying is authorized, but you can still access user session data if they
  * are logged in.
  */
+const isAuthed = t.middleware(({ ctx, next }) => {
+  const token =
+    ctx.headers.get("Authorization") ?? ctx.headers.get("authorization");
+
+  if (!token?.startsWith("Bearer ")) {
+    throw new Error("Unauthorized");
+  }
+
+  return next({
+    ctx: {
+      ...ctx,
+      session: {
+        token: token.replace("Bearer ", ""),
+      },
+    },
+  });
+});
+
 export const publicProcedure = t.procedure.use(timingMiddleware);
+export const privateProcedure = t.procedure.use(timingMiddleware).use(isAuthed);
