@@ -1,6 +1,5 @@
 import { api } from "~/trpc/server";
 import { ArticlesTable } from "~/components/articles/articles-table";
-import { cookies } from "next/headers";
 import type { Article } from "~/types/article";
 
 interface ArticleWithComments extends Article {
@@ -8,18 +7,12 @@ interface ArticleWithComments extends Article {
 }
 
 export default async function MyArticles() {
-  const token = (await cookies()).get("token")?.value ?? "";
+  const { items: articles } = await api.article.getArticle({});
 
-  const { items: articles } = await api.article.getArticle({
-    token,
-  });
-
-  // Fetch each article detail in parallel to get comments
   const enrichedArticles = await Promise.all(
     articles.map(async (article) => {
       const detail = await api.article.getArticleDetail({
         articleId: article.articleId,
-        token,
       });
 
       return {

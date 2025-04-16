@@ -92,7 +92,6 @@ export function ArticleForm({
   return (
     <div className="rounded-md border bg-white p-6">
       <form id="article-form" onSubmit={handleSubmit} className="space-y-6">
-        {/* Title */}
         <div className="space-y-2">
           <label htmlFor="title" className="text-sm font-medium">
             Article Title
@@ -106,7 +105,6 @@ export function ArticleForm({
           />
         </div>
 
-        {/* Image Upload */}
         <div className="space-y-2">
           <label className="text-sm font-medium">Featured Image</label>
           {(previewUrl ?? imageUrl) && (
@@ -126,7 +124,6 @@ export function ArticleForm({
           />
         </div>
 
-        {/* Perex */}
         <div className="space-y-2">
           <label htmlFor="perex" className="text-sm font-medium">
             Perex
@@ -140,7 +137,6 @@ export function ArticleForm({
           />
         </div>
 
-        {/* Content */}
         <div className="space-y-2">
           <label htmlFor="content" className="text-sm font-medium">
             Content

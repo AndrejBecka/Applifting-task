@@ -1,5 +1,4 @@
 "use client";
-
 import { useEffect, useState } from "react";
 
 const API_URL = process.env.NEXT_PUBLIC_AppLift_URL!;

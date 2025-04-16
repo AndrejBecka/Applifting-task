@@ -7,7 +7,6 @@ import MDEditor from "@uiw/react-md-editor";
 import { mockComments } from "~/lib/comments-mock";
 import { ThumbsUp, ThumbsDown } from "lucide-react";
 import { Avatar, AvatarFallback } from "../ui/avatar";
-import { Input } from "../ui/input";
 
 interface Comment {
   commentId: string;
