@@ -1,29 +1,171 @@
-# Create T3 App
+# 📝 Fullstack Blog Engine – Next.js + tRPC + Applifting API
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+A fully featured, production-ready blog engine built with **Next.js App Router**, **tRPC**, **Tailwind CSS**, **Zod**, and the **Applifting Blog Engine API**. Markdown content, comments, API security, and full end-to-end type safety — ready to deploy.
 
-## What's next? How do I make an app with this?
+---
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+## 🚀 Stack Overview
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+### 🔧 1. **Next.js 15 App Router**
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- Uses the modern App Router paradigm (e.g., `app/articles/[articleId]/page.tsx`)
+- Built-in server components for SEO & data fetching
+- Async server functions to load data directly into pages
 
-## Learn More
+### 🧠 2. **tRPC + Zod**
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+- Fully typed API via `tRPC` routers
+- Validated inputs using `Zod`
+- End-to-end type inference from backend to frontend
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+### 🎨 3. **Tailwind CSS**
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+- Utility-first styling
+- Responsive, clean design with `max-w-4xl`, `prose`, etc.
+- Dark mode ready
 
-## How do I deploy this?
+### ✍️ 4. **Markdown Editor**
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+- Markdown stored in DB, rendered to HTML
+- Editor: `@uiw/react-md-editor`
+- Live WYSIWYG preview with Tailwind's prose classes
+
+### 💬 5. **Comments System**
+
+- Markdown support for comments
+- `CommentSection` renders comment list and editor
+- Comment schema includes `author`, `content`, `score`
+- (Future) WebSocket-powered upvotes/downvotes
+
+### 🪝 6. **Custom Hooks**
+
+- `useImageHandler`: handles both upload + secure retrieval of protected images
+- `useHydrated`: detects hydration mismatch to avoid flicker
+
+### 🔐 7. **Authentication & API Security**
+
+- Dual-header auth:
+  - `X-API-KEY` (tenant)
+  - `Authorization: Bearer <token>` (user)
+- Secure fetch for protected endpoints (e.g., posting comments, creating articles)
+
+### 📦 8. **tRPC Routers**
+
+- `articleRouter`: CRUD for articles
+- `commentRouter`: create + vote on comments
+- `authRouter`: tenant registration & login
+- All routers use Zod-validated schemas for inputs/outputs
+
+### 🌐 9. **OpenAPI Integration: Applifting Blog Engine**
+
+- `/articles` CRUD
+- `/login` for authentication
+- `/comments` for user interaction
+- `/images` for uploading + fetching secure assets
+- `/tenants` for tenant registration (used as "user registration")
+
+---
+
+## ✅ Features
+
+- Full article CRUD
+- Markdown rendering & editing
+- Secure image uploads with preview
+- Comment system with score & voting
+- Protected API access with tokens
+- Form validation with Zod
+- Clean, reusable UI components
+
+---
+
+## 🧱 Folder Structure: T3 App Inspired
+
+This project follows a modular folder structure inspired by the [T3 Stack](https://create.t3.gg/) principles:
+
+- **Feature-first organization**: Pages and components grouped by domain (e.g. `articles`, `login`, `admin`)
+- **App Router layout** with `app/` directory, nested routes, and dynamic segments
+- **tRPC + Zod** for typed backend APIs
+- **Separation of concerns** via folders like:
+  - `hooks/` – reusable client-side logic
+  - `components/` – structured UI by domain
+  - `schemas/` – Zod schemas for strict typing
+  - `types/` – API & domain-specific TypeScript types
+  - `server/api/routers/` – backend logic (articles, auth, comments, etc.)
+  - `trpc/` – client/server integration utilities
+  - `lib/` – general utilities and helpers
+
+This setup mirrors the philosophy of the T3 stack: **type safety**, **modularity**, and **developer happiness**.
+
+---
+
+## 🔧 Project Structure - Example
+
+```bash
+app/
+  articles/
+    [articleId]/page.tsx        # Detail page (SSR + hydration)
+  create/page.tsx              # New article form
+  layout.tsx                   # Shared layout
+
+components/
+  articles/ArticleCard.tsx     # Article list card
+  articles/ArticleForm.tsx     # Markdown form + image upload
+  CommentSection.tsx           # Comments & votes
+
+server/api/
+  routers/
+    article.ts                 # tRPC routes for articles
+    comment.ts                 # tRPC routes for comments
+    auth.ts                    # login/register
+
+schemas/
+  article.schema.ts            # Zod schemas
+  comment.schema.ts
+  auth.schema.ts
+```
+
+---
+
+## 🧪 Local Development
+
+```bash
+pnpm install
+pnpm dev
+```
+
+You must define the following environment variables:
+
+```env
+API_KEY=<your-api-key>
+AppLift_URL=<applifting-url>
+
+NEXT_PUBLIC_AppLift_URL=<applifting-url>
+NEXT_PUBLIC_API_KEY=<your-api-key>
+```
+
+Use `/login` to acquire an access token for secured actions.
+
+---
+
+## 📦 Deployment
+
+This project works great on:
+
+- **Vercel** (recommended)
+- **Node.js hosting**
+- **SSR-compatible platforms**
+
+Supports SEO via SSR and preloading content via App Router.
+
+---
+
+## 👏 Credits
+
+- API provided by **Applifting**
+- Built with love using **Next.js, Tailwind, tRPC, Zod, and Markdown**
+
+---
+
+## 📬 Want Help or Improvements?
+
+Open an issue or start a PR!
